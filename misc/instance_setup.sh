@@ -121,8 +121,14 @@ cd hap.py-0.3.15
 python ./install.py "$INSTALL_DIR"/happy/hap.py-install --no-tests
 
 # Install snakemake with pip
-sudo apt install python3  python3-pip -y
-pip3 install snakemake --no-input
+cd "$INSTALL_DIR"
+curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b
+python3=/home/azureuser/miniconda3/bin/python
+pip3=/home/azureuser/miniconda3/bin/pip
+$pip3 install snakemake
+snakemake=/home/azureuser/miniconda3/bin/snakemake
+
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"
