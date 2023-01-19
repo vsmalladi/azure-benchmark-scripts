@@ -3,7 +3,7 @@
 set -exvuo pipefail
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-WORK_DIR="/home/ec2-user/work"
+WORK_DIR="/home/azureuser/work"
 USE_RAMDISK=false  # Switched to `true` on the hpc6a.48xlarge instance
 
 if [[ "$USE_RAMDISK" == true ]]; then
@@ -127,17 +127,17 @@ snakefile="$DIR"/../workflow/Snakefile.smk
 
 mem_kb=$(cat /proc/meminfo | grep "MemTotal" | awk '{print $2}')
 mem_mb=$((mem_kb / 1024))
-export LD_PRELOAD=/home/ec2-user/programs/jemalloc/jemalloc-5.2.1/lib/libjemalloc.so.2
+export LD_PRELOAD=/home/azureuser/programs/jemalloc/jemalloc-5.2.1/lib/libjemalloc.so.2
 export MALLOC_CONF=metadata_thp:auto,background_thread:true,dirty_decay_ms:30000,muzzy_decay_ms:30000
 export SENTIEON_TMPDIR="$WORK_DIR/ramdisk/tmp"
 export SENTIEON_LICENSE=  # FQDN:port or localhost file for the Sentieon license
 
 architechure=$(uname -m)
-configfile="$DIR"/config/config.yaml
+configfile="$DIR"/../config/config.yaml
 if [[ "$architechure" == "x86_64" ]]; then
-    configfile="$DIR"/config/config.yaml
+    configfile="$DIR"/../config/config.yaml
 elif [[ "$architechure" == "arm" || "$architechure" == "aarch64" ]]; then
-    configfile="$DIR"/config/config_arm.yaml
+    configfile="$DIR"/../config/config_arm.yaml
 else
     echo "UNKNOWN ARCHITECHURE"
     exit 1
