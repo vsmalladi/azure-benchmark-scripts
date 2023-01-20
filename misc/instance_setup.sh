@@ -13,6 +13,7 @@ mkdir -p "$INSTALL_DIR" "$WORK_DIR"
 
 
 # Update the machine and install some packages
+sudo apt update -y
 sudo apt install -y
 sudo apt install -y autoconf automake make gcc libdata-dump-perl zlib1g zlib1g-dev  \
     bzip2 libbz2-dev xz-utils curl openssl libncurses5-dev libncursesw5-dev libtool \
