@@ -1,6 +1,6 @@
-# Sentieon DNAseq and DNAscope Benchmarking on AWS
+# Sentieon DNAseq and DNAscope Benchmarking on Azure
 
-This repository contains scripts used for benchmarking Sentieon DNAseq and DNAscope pipelines on AWS EC2.
+This repository contains scripts used for benchmarking Sentieon DNAseq and DNAscope pipelines on Azure, on an Ubuntu Machine.
 
 ### Instance Setup
 
