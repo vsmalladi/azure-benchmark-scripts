@@ -37,6 +37,7 @@
             - "https://s3.amazonaws.com/giab/data/AshkenazimTrio/HG002_NA24385_son/PacBio_CCS_15kb_20kb_chemistry2/reads/m64015_190922_010918.fastq.gz"
       Ultima_HG002_cram:
         url: https://s3.amazonaws.com/ultima-selected-1k-genomes/crams/005401-UGAv3-1-CACATCCTGCATGTGAT.cram
+        index: https://s3.amazonaws.com/ultima-selected-1k-genomes/crams/005401-UGAv3-1-CACATCCTGCATGTGAT.cram.crai
     known_sites:
       dbsnp: https://s3.amazonaws.com/broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf
       mills: https://s3.amazonaws.com/broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
@@ -49,15 +50,15 @@
   params:
     n_target_bases: 93000000000  # 30x at a 3.1GB genome
   tools:
-    sentieon: /home/ec2-user/programs/release/sentieon-genomics-202112.05/bin/sentieon
-    sentieon_old: /home/ec2-user/programs/release/sentieon-genomics-201711.01/bin/sentieon
-    igzip: /home/ec2-user/programs/isa-l/isa-l-2.30.0/programs/igzip
-    seqtk: /home/ec2-user/programs/seqtk/seqtk/seqtk
-    pigz: /home/ec2-user/programs/pigz/pigz-2.7/pigz
-    bedtools: /home/ec2-user/programs/bedtools/2.30.0/bedtools
-    samtools: /home/ec2-user/programs/samtools/samtools-1.15.1/samtools
-    bcftools: /home/ec2-user/programs/bcftools/bcftools-1.15.1/bcftools
-    rtgtools: /home/ec2-user/programs/rtgtools/rtg-tools-3.12.1/rtg
-    conda: /home/ec2-user/miniconda3/bin/conda
-    python2: /home/ec2-user/miniconda2/bin/python
-    hap.py: /home/ec2-user/programs/happy/hap.py-install/bin/hap.py
+    sentieon: /home/azureuser/programs/release/sentieon-genomics-202112.05/bin/sentieon
+    sentieon_old: /home/azureuser/programs/release/sentieon-genomics-201711.01/bin/sentieon
+    igzip: /home/azureuser/programs/isa-l/isa-l-2.30.0/programs/igzip
+    seqtk: /home/azureuser/programs/seqtk/seqtk/seqtk
+    pigz: /home/azureuser/programs/pigz/pigz-2.7/pigz
+    bedtools: /home/azureuser/programs/bedtools/2.30.0/bedtools
+    samtools: /home/azureuser/programs/samtools/samtools-1.15.1/samtools
+    bcftools: /home/azureuser/programs/bcftools/bcftools-1.15.1/bcftools
+    rtgtools: /home/azureuser/programs/rtgtools/rtg-tools-3.12.1/rtg
+    conda: /home/azureuser/miniconda3/bin/conda
+    python2: /home/azureuser/miniconda2/bin/python
+    hap.py: /home/azureuser/programs/happy/hap.py-install/bin/hap.py
