@@ -5,6 +5,7 @@ set -exvuo pipefail
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 WORK_DIR="/home/azureuser/work"
 USE_RAMDISK=false  # Switched to `true` on the hpc6a.48xlarge instance
+snakemake=/home/azureuser/miniconda3/bin/snakemake
 
 if [[ "$USE_RAMDISK" == true ]]; then
     # Increase the size of /dev/shm
@@ -130,7 +131,7 @@ mem_mb=$((mem_kb / 1024))
 export LD_PRELOAD=/home/azureuser/programs/jemalloc/jemalloc-5.2.1/lib/libjemalloc.so.2
 export MALLOC_CONF=metadata_thp:auto,background_thread:true,dirty_decay_ms:30000,muzzy_decay_ms:30000
 export SENTIEON_TMPDIR="$WORK_DIR/ramdisk/tmp"
-export SENTIEON_LICENSE=  # FQDN:port or localhost file for the Sentieon license
+export SENTIEON_LICENSE= # FQDN:port or localhost file for the Sentieon license
 
 architechure=$(uname -m)
 configfile="$DIR"/../config/config.yaml
@@ -158,5 +159,5 @@ for target in "${targets[@]}"; do
     for hcr_region in "none" "Ultima-HCR"; do
         expected+=("$target"/"$hcr_region"/sample.summary.csv)
     done
-    $snakemake --reason --resources mem_mb="$mem_mb" --configfile "$configfile" -s "$snakefile" -j $(nproc) -d "$WORK_DIR" -p --verbose --keep-going ${expected[@]}
+    /home/azureuser/miniconda3/bin/snakemake --reason --resources mem_mb="$mem_mb" --configfile "$configfile" -s "$snakefile" -j $(nproc) -d "$WORK_DIR" -p --verbose --keep-going ${expected[@]}
 done
