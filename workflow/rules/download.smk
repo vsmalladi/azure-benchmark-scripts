@@ -12,6 +12,7 @@ CRAM_REF = "reference/Homo_sapiens_assembly38.fasta"
 AUTOSOMES = "autosomes_bed/autosomes.fa"
 TRUTHSET = "truthset/v4.2.1/HG002/truthset"
 SITE_VCF = "sites_vcfs/{vcf_name}/calls.vcf.gz"
+SITE_INPUT_VCF = "sites_vcfs/{vcf_name}/inputs.vcf.gz"
 DNASCOPE_MODEL = "dnascope_model/{platform}/dnascope.model"
 
 DNASCOPE_LR_SCRIPT = "dnascope_lr_script/DNAscopeHiFiBeta0.4.pipeline/dnascope_HiFi.sh"
@@ -45,6 +46,7 @@ rule download_ultima:
     stderr = CRAM + ".stderr",
   params:
     url = lambda wldc: config["input"]["samples"][wldc.sample]["url"],
+    index = lambda wldc: config["input"]["samples"][wldc.sample]["index"],
   shell:
     """
     set -exvuo pipefail
@@ -53,7 +55,7 @@ rule download_ultima:
     exec 1>"{log.stdout}" 2>"{log.stderr}"
 
     curl -L -o "{output.cram}" "{params.url}"
-    curl -L -o "{output.crai}" "{params.url}.crai"
+    curl -L -o "{output.crai}" "{params.index}"
     """
 
 rule download_truthset:
@@ -157,6 +159,7 @@ rule download_sites_vcf:
     sentieon = config["tools"]["sentieon"],
   output:
     vcf = SITE_VCF,
+    input = SITE_INPUT_VCF,
     tbi = SITE_VCF + ".tbi",
   log:
     stdout = SITE_VCF + ".stdout",
@@ -176,8 +179,8 @@ rule download_sites_vcf:
       curl -L -o "{output.vcf}" "{params.url}"
       "{input.sentieon}" util vcfindex "{output.vcf}"
     else
-      curl -L "{params.url}" | \
-        "{input.sentieon}" util vcfconvert - "{output.vcf}"
+      curl -L -o "{output.input}" "{params.url}"
+      gzip -dc "{output.input}"  | "{input.sentieon}" util vcfconvert - "{output.vcf}"
     fi
     """
 
@@ -214,3 +217,4 @@ rule dnascope_lr_script:
     cd "$outdir2"
     curl -L "{params.url}" | tar -zxf -
     """
+
