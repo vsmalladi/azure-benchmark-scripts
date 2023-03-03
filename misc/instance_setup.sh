@@ -13,10 +13,11 @@ mkdir -p "$INSTALL_DIR" "$WORK_DIR"
 
 
 # Update the machine and install some packages
+sudo apt update -y
 sudo apt install -y
 sudo apt install -y autoconf automake make gcc libdata-dump-perl zlib1g zlib1g-dev  \
     bzip2 libbz2-dev xz-utils curl openssl libncurses5-dev libncursesw5-dev libtool \
-    nasm yasm gzip git unzip hostname cmake make gcc g++ autoconf liblzma-dev
+    nasm yasm gzip git unzip hostname cmake make gcc g++ autoconf liblzma-dev python
 
 # Get the software packge
 cd "$INSTALL_DIR"
