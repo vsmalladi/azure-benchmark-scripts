@@ -7,19 +7,17 @@ SENTIEON_OLD=201711.01
 SENTIEON_URL="https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-"
 SENTIEON_ARM_URL="https://s3.amazonaws.com/sentieon-release/software/arm-sentieon-genomics-"
 
-INSTALL_DIR="/home/ec2-user/programs"
-WORK_DIR="/home/ec2-user/work"
+INSTALL_DIR="/home/azureuser/programs"
+WORK_DIR="/home/azureuser/work"
 mkdir -p "$INSTALL_DIR" "$WORK_DIR"
 
-FSX_URL=fs-069bf70594cd2581f.fsx.us-east-2.amazonaws.com  # The FSX mount used to save input files and results
 
 # Update the machine and install some packages
-sudo yum update -y
-sudo amazon-linux-extras install -y epel 
-sudo amazon-linux-extras install -y lustre2.10
-sudo yum install -y autoconf automake make gcc perl-Data-Dumper zlib-devel \
-    bzip2 bzip2-devel xz-devel curl-devel openssl-devel ncurses-devel libtool \
-    nasm yasm gzip git unzip hostname which cmake gcc-c++
+sudo apt update -y
+sudo apt install -y
+sudo apt install -y autoconf automake make gcc libdata-dump-perl zlib1g zlib1g-dev  \
+    bzip2 libbz2-dev xz-utils curl openssl libncurses5-dev libncursesw5-dev libtool \
+    nasm yasm gzip git unzip hostname cmake make gcc g++ autoconf liblzma-dev python
 
 # Get the software packge
 cd "$INSTALL_DIR"
@@ -58,7 +56,7 @@ curl -L https://github.com/intel/isa-l/archive/refs/tags/v2.30.0.tar.gz | \
     tar -zxf -
 cd isa-l-2.30.0/
 ./autogen.sh
-./configure --prefix=/usr --libdir=/usr/lib64
+./configure --prefix=/usr --libdir=/usr/lib
 make && sudo make install
 
 # install seqtk
@@ -124,19 +122,22 @@ cd hap.py-0.3.15
 python ./install.py "$INSTALL_DIR"/happy/hap.py-install --no-tests
 
 # Install snakemake with pip
-sudo yum install python3-devel -y
-pip3 install snakemake --no-input
+cd "$INSTALL_DIR"
+curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b
+python3=/home/azureuser/miniconda3/bin/python
+pip3=/home/azureuser/miniconda3/bin/pip
+$pip3 install snakemake
+snakemake=/home/azureuser/miniconda3/bin/snakemake
+
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"
 curl -LO https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
 bash Miniconda2-latest-Linux-x86_64.sh -b
-python2=/home/ec2-user/miniconda2/bin/python
-pip2=/home/ec2-user/miniconda2/bin/pip
+python2=/home/azureuser/miniconda2/bin/python
+pip2=/home/azureuser/miniconda2/bin/pip
 
 # install hap.py dependencies into the py2 env
 $pip2 install pysam pandas scipy
 
-# mount the fsx storage
-sudo mkdir /fsx
-sudo mount -t lustre -o noatime,flock "$FSX_URL"@tcp:/fsx /fsx

@@ -1,6 +1,6 @@
-# Sentieon DNAseq and DNAscope Benchmarking on AZURE
+# Sentieon DNAseq and DNAscope Benchmarking on Azure
 
-This repository contains scripts used for benchmarking Sentieon DNAseq and DNAscope pipelines on Azure.
+This repository contains scripts used for benchmarking Sentieon DNAseq and DNAscope pipelines on Azure, on an Ubuntu Machine.
 
 ### Instance Setup
 

@@ -139,9 +139,9 @@ row_order = [
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input_directory", nargs="+", help="A directory containing benchmark results")
-    parser.add_argument("--instance_price", nargs="+", help="The instance price in $/hr")
-    parser.add_argument("--instance_type", nargs="+", help="The instance type")
+    parser.add_argument("--input_directory", help="A directory containing benchmark results")
+    parser.add_argument("--instance_price", type=float, help="The instance price in $/hr")
+    parser.add_argument("--instance_type", help="The instance type")
     parser.add_argument("--outfile", default=sys.stdout, type=argparse.FileType('w'))
     return parser.parse_args(argv)
 
@@ -153,12 +153,25 @@ def bm_file_to_sec(bm_path):
     return float(values[0])
 
 def main(args):
-    assert len(args.input_directory) == len(args.instance_price)
-    assert len(args.input_directory) == len(args.instance_type)
 
-    # Iterate over each instance type
+    targets=[
+        "DNAseq/Illumina_HG002_HiSeqX_40x",
+        "DNAseq/Illumina_HG002_NovaSeq_40x",
+        "DNAscope/Illumina_HG002_HiSeqX_40x",
+        "DNAscope/Illumina_HG002_NovaSeq_40x",
+        "DNAscope/Element_HG002_100x",
+        "DNAscope/Ultima_HG002_cram",
+        "DNAscope_LongRead/PacBio_HG002_HiFi_Chem2",
+    ]
+
+
+    # Iterate over each target
     overall_results = collections.OrderedDict()
-    for in_dir, price, instance_type in zip(args.input_directory, args.instance_price, args.instance_type):
+    in_dir = str(args.input_directory)
+    price = args.instance_price
+    instance_type = args.instance_type
+    for target in targets:
+        runtime_in_sec = collections.OrderedDict()
         price = float(price)
         for pipeline, samples in pipeline_samples.items():
             for sample in samples:
@@ -173,37 +186,72 @@ def main(args):
                         print(f"Missing files for instance '{instance_type}', pipeline '{pipeline}', and sample '{sample}' at: {fullpath}", file=sys.stderr, flush=True)
                         break
 
-                    reduce_func = d.get("reduce_func", sum)
-                    runtime_in_sec[stage] = reduce_func([bm_file_to_sec(x) for x in stage_results])
-                if missing_stage:
-                    print(f"Skipping pipeline '{pipeline}' for instance '{instance_type}' and sample '{sample}'")
-                    continue
+        target_split = target.split('/')
+        pipeline = target_split[0] 
+        sample = target_split[1]
+        if (pipeline == "DNAseq"):
 
-                # summary results
-                runtime_in_sec["Total (s)"] = sum(runtime_in_sec.values())
-                runtime_in_sec["Total (min)"] = runtime_in_sec["Total (s)"] / 60
-                runtime_in_sec["$/hr"] = price
-                runtime_in_sec["Total compute cost"] = runtime_in_sec["Total (s)"] / 60 / 60 * price
+            # Alignment runtimes
+            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem", sample,  "0/*/*/alignments.bam.benchmark.txt"))
+            runtime_in_sec["Alignment"] = max([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
 
-                key = " -- ".join((pipeline, sample))
-                if instance_type not in overall_results:
-                    overall_results[instance_type] = collections.OrderedDict()
-                overall_results[instance_type][key] = runtime_in_sec.copy()
+            # Preprocessing
+            runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "score.txt.gz.benchmark.txt"))
+            runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "dedup.bam.benchmark.txt"))
+            runtime_in_sec["QualCal"] = bm_file_to_sec(os.path.join(in_dir, "qualcal", sample, "recal.table.benchmark.txt"))
+            
+            # Variant Calling
+            runtime_in_sec["Haplotyper"] = bm_file_to_sec(os.path.join(in_dir, "haplotyper", sample, "calls.vcf.gz.benchmark.txt"))
+        
+        elif (pipeline == 'DNAscope'):
+            if (sample != 'Ultima_HG002_cram'):
+                # Alignment runtimes
+                alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem", sample,  "0/*/*/alignments.bam.benchmark.txt"))
+                runtime_in_sec["Alignment"] = max([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
+            
+
+                # Preprocessing
+                runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "score.txt.gz.benchmark.txt"))
+                runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "dedup.bam.benchmark.txt"))
+            
+            # Variant Calling
+            runtime_in_sec["Dnascope"] = bm_file_to_sec(os.path.join(in_dir, "dnascope", sample, "calls.vcf.gz.benchmark.txt"))
+            runtime_in_sec["Dnascope_tmp"] = bm_file_to_sec(os.path.join(in_dir, "dnascope_tmp", sample, "calls.vcf.gz.benchmark.txt"))
+        
+        elif (pipeline == 'DNAscope_LongRead'):
+            # Alignment runtimes
+            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/minimap2", sample, "*/alignments.bam.benchmark.txt"))
+            runtime_in_sec["Alignment"] = sum([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
+
+            # Preprocssing
+            runtime_in_sec["MergePb"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/merge_pb", sample, "merged.bam.benchmark.txt"))
+            
+            # Variant Calling
+            runtime_in_sec["Dnascope"] = bm_file_to_sec(os.path.join(in_dir, "dnascope_lr", sample, "calls.vcf.gz.benchmark.txt"))
+        
+        # summary results
+        results = collections.OrderedDict()
+        results["Total (s)"] = sum(runtime_in_sec.values())
+        results["Total (min)"] = sum(runtime_in_sec.values()) / 60
+        results["$/hr"] = price
+        results["Total compute cost"] = sum(runtime_in_sec.values()) / 60 / 60 * price
+
+        # Collect everything together
+        runtime_in_sec.update(results)
+        overall_results[target] = runtime_in_sec.copy()
+        
+
 
     # Output a nice table
-    row = [[k] * len(v) for k,v in overall_results.items()]
-    row = ["Instance type"] + [item for sublist in row for item in sublist]  # flatten
-    print('\t'.join(row), file=args.outfile)
-
-    row = ["Pipeline"] + [key for v in overall_results.values() for key in v.keys()]
-    print('\t'.join(row), file=args.outfile)
-
-    for row_name in row_order:
-        row = [row_name]
-        for _, v in overall_results.items():
-            for _, d in v.items():
-                row.append(d.get(row_name, 0.0))
-        print('\t'.join([str(x) for x in row]), file=args.outfile)
+    print(args.instance_type, file=args.outfile)
+    print("\n", file=args.outfile)
+    for sample in targets:
+        row_names = list(overall_results[sample].keys())
+        print(sample, file=args.outfile)
+        for row_name in row_names:
+            row = [row_name] + [str(overall_results[sample][row_name])]
+            print('\t'.join(row), file=args.outfile)
+        print("\n", file=args.outfile)
 
     return 0
 
