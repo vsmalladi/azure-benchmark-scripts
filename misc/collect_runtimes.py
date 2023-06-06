@@ -9,6 +9,12 @@ import collections
 import glob
 import os.path
 import sys
+import requests
+import json, operator
+import sys
+import os
+import logging
+import pandas as pd
 
 pipelines = {
     "DNAseq": collections.OrderedDict([
@@ -132,7 +138,7 @@ pipeline_samples = {
 }
 
 row_order = [
-    "Alignment", "Merge", "LocusCollector", "Dedup", "QualCal", "Haplotyper",
+    "Sample", "Pipeline","Alignment", "Merge", "LocusCollector", "Dedup", "QualCal", "Haplotyper",
     "DNAscope_tmp", "DNAscope", "DNAscope-LR", "Total (s)", "Total (min)",
     "$/hr", "Total compute cost"
 ]
@@ -140,10 +146,27 @@ row_order = [
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input_directory", help="A directory containing benchmark results")
-    parser.add_argument("--instance_price", type=float, help="The instance price in $/hr")
-    parser.add_argument("--instance_type", help="The instance type")
-    parser.add_argument("--outfile", default=sys.stdout, type=argparse.FileType('w'))
+    parser.add_argument('-f', '--family', help='VM family to query, e.g. ND, ND96asr')
+    parser.add_argument('-v', '--version', help='VM family version, e.g. v4')
+    parser.add_argument('-r', '--region', help='Azure region to query, e.g. eastus')
+    parser.add_argument('-m', '--meter', help='Meter, e.g. "Spot" or "Low Priority"')
+    parser.add_argument("--outfile", help='CSV format file' , type=argparse.FileType('w'))
     return parser.parse_args(argv)
+
+def construct_query(region, fam, ver, meter):
+    # only VMs under consumption plans (PAYG, Low Priority, Spot); no reserved instances
+    query = 'serviceName eq \'Virtual Machines\' and priceType ne \'Reservation\''
+    if region != None:
+        query += ' and armRegionName eq \'' + region + '\''
+    if fam != None:
+        query = query + ' and contains(skuName, \'' + fam + '\')'
+    if ver != None:
+        query = query + ' and contains(skuName, \'' + ver + '\')'
+    if meter != None:
+        query = query + ' and contains(meterName, \'' + meter + '\')'
+
+    logging.debug('query = {}'.format(query))
+    return query
 
 def bm_file_to_sec(bm_path):
     """ Extract the runtime in seconds from the snakemake benchmark file """
@@ -165,11 +188,36 @@ def main(args):
     ]
 
 
+    # Azure pricing
+    region=args.region
+    fam=args.family
+    ver=args.version
+    meter=args.meter
+    
+    api_url = "https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview"
+    query = construct_query(region, fam, ver, meter)
+    response = requests.get(api_url, params={'$filter': query})
+    json_data = json.loads(response.text)
+    df = pd.DataFrame.from_dict(json_data['Items'])
+    #drop Windows and Dedicated offerings
+    trimmed_df = df[(df['productName'].str.contains('Windows') == False) & (df['productName'].str.contains('Dedicated') == False)]
+    instance_price = trimmed_df['retailPrice'].iloc[0]
+    instance_type = trimmed_df['armSkuName'].iloc[0]
+
+    if response == None:
+        print("No response from API")
+        sys.exit(1)
+    elif response.status_code != 200:
+        print("API returned status code: " + str(response.status_code))
+        sys.exit(1)
+
+
+
     # Iterate over each target
-    overall_results = collections.OrderedDict()
+    overall_results = pd.DataFrame()
     in_dir = str(args.input_directory)
-    price = args.instance_price
-    instance_type = args.instance_type
+    price = instance_price
+    instance_type = instance_type
     for target in targets:
         runtime_in_sec = collections.OrderedDict()
         price = float(price)
@@ -235,23 +283,20 @@ def main(args):
         results["Total (min)"] = sum(runtime_in_sec.values()) / 60
         results["$/hr"] = price
         results["Total compute cost"] = sum(runtime_in_sec.values()) / 60 / 60 * price
+        results['Sample'] = sample
+        results['Pipeline'] = pipeline
 
         # Collect everything together
         runtime_in_sec.update(results)
-        overall_results[target] = runtime_in_sec.copy()
+        df_results = pd.DataFrame(runtime_in_sec, index=[0])
+        overall_results = pd.concat([overall_results, df_results])
         
 
 
     # Output a nice table
-    print(args.instance_type, file=args.outfile)
-    print("\n", file=args.outfile)
-    for sample in targets:
-        row_names = list(overall_results[sample].keys())
-        print(sample, file=args.outfile)
-        for row_name in row_names:
-            row = [row_name] + [str(overall_results[sample][row_name])]
-            print('\t'.join(row), file=args.outfile)
-        print("\n", file=args.outfile)
+    overall_results = overall_results[row_order]
+    overall_results.to_csv(args.outfile, sep=',', index=False)
+
 
     return 0
 

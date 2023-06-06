@@ -19,7 +19,12 @@ The script at `misc/run_benchmarks.sh` was used to run the benchmarks. Before ru
 
 ### Collecting runtimes
 
-The script at `misc/collect_runtimes.py` was used to collect bechmarking results. To get pricing use `misc/azpricing.py` which published information on the Azure pricing APIs.
+The script at `misc/collect_runtimes.py` was used to collect bechmarking results. This script will pull
+pricing for the specific instance type you are running.
+
+
+
+To further explore pricing use `misc/azpricing.py` which published information on the Azure pricing APIs.
 
 
 [Azure Retail Prices overview](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices)

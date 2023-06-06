@@ -119,25 +119,33 @@ cd happy
 curl -L "https://github.com/Illumina/hap.py/archive/refs/tags/v0.3.15.tar.gz" | \
     tar -zxf -
 cd hap.py-0.3.15
-python ./install.py "$INSTALL_DIR"/happy/hap.py-install --no-tests
+python2 ./install.py "$INSTALL_DIR"/happy/hap.py-install --no-tests
 
 # Install snakemake with pip
 cd "$INSTALL_DIR"
-curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh -b
+curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh
+bash Miniconda3-latest-Linux-aarch64.sh -b
 python3=/home/azureuser/miniconda3/bin/python
 pip3=/home/azureuser/miniconda3/bin/pip
-$pip3 install snakemake
+$pip3 install snakemake pandas
 snakemake=/home/azureuser/miniconda3/bin/snakemake
 
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"
-curl -LO https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
+curl -LO https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-aarch64.sh
 bash Miniconda2-latest-Linux-x86_64.sh -b
 python2=/home/azureuser/miniconda2/bin/python
 pip2=/home/azureuser/miniconda2/bin/pip
 
+# arm
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+sudo python2 get-pip.py
+python2=/usr/bin/python2
+pip2=/usr/local/bin/pip2
+
+
+
 # install hap.py dependencies into the py2 env
-$pip2 install pysam pandas scipy
+pip2 install pysam pandas scipy
 
