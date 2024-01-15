@@ -35,6 +35,62 @@
         - rg: "@RG\\tID:PB-HiFi-Chem2-HG002-6\\tSM:HG002\\tPL:PACBIO"
           fq:
             - "https://s3.amazonaws.com/giab/data/AshkenazimTrio/HG002_NA24385_son/PacBio_CCS_15kb_20kb_chemistry2/reads/m64015_190922_010918.fastq.gz"
+      ONT_HG002_HPRC:
+        - rg: "@RG\\tID:ONT-HPRC-HG002-1\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_1_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-2\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_2_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-3\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_3_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-4\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_4_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-5\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_5_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-6\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_6_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-7\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_7_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-8\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_8_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-9\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_9_Dora
+o_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-10\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+FDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_10_Dor
+do_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+        - rg: "@RG\\tID:ONT-HPRC-HG002-11\\tSM:HG002\\tPL:ONT"
+          fq:
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9
+BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_11_Dor
+ado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
       Ultima_HG002_cram:
         url: https://s3.amazonaws.com/ultima-selected-1k-genomes/crams/005401-UGAv3-1-CACATCCTGCATGTGAT.cram
         index: https://s3.amazonaws.com/ultima-selected-1k-genomes/crams/005401-UGAv3-1-CACATCCTGCATGTGAT.cram.crai
@@ -44,15 +100,15 @@
       mills: https://s3.amazonaws.com/broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
       known_indels: https://s3.amazonaws.com/broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz
     dnascope_model:
-      Illumina: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModel1.1.model
+      Illumina: https://s3.amazonaws.com/sentieon-release/other/DNAscopeIlluminaWGS2.0.bundle
+      Illumina_WES: https://s3.amazonaws.com/sentieon-release/other/DNAscopeIlluminaWES2.0.bundle
       Element: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelElementBio0.3.model
       Ultima: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelUltima0.4.model
-    dnascope_LR_package: https://s3.amazonaws.com/sentieon-release/other/DNAscopeHiFiBeta0.4.pipeline.tar.gz
+      PacBio: https://s3.amazonaws.com/sentieon-release/other/DNAscopePacBio2.0.bundle
   params:
     n_target_bases: 93000000000  # 30x at a 3.1GB genome
   tools:
-    sentieon: /home/azureuser/programs/release/arm-sentieon-genomics-202112.05/bin/sentieon
-    sentieon_old: /home/azureuser/programs/release/arm-sentieon-genomics-202112.05/bin/sentieon
+    sentieon: /home/azureuser/programs/release/arm-sentieon-genomics-202308.01/bin/sentieon
     igzip: /home/azureuser/programs/isa-l/isa-l-2.30.0/programs/igzip
     seqtk: /home/azureuser/programs/seqtk/seqtk/seqtk
     pigz: /home/azureuser/programs/pigz/pigz-2.7/pigz
@@ -63,3 +119,4 @@
     conda: /home/azureuser/miniconda3/bin/conda
     python2: /home/azureuser/miniconda2/bin/python
     hap.py: /home/azureuser/programs/happy/hap.py-install/bin/hap.py
+    sentieon_cli: /home/azureuser/programs/sentieon-cli/.venv/bin/sentieon-cli

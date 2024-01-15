@@ -145,19 +145,16 @@ else
 fi
 
 targets=(
-  "eval/DNAseq/Illumina_HG002_HiSeqX_40x"
-  "eval/DNAseq/Illumina_HG002_NovaSeq_40x"
-  "eval/DNAscope/Illumina_HG002_HiSeqX_40x"
-  "eval/DNAscope/Illumina_HG002_NovaSeq_40x"
-  "eval/DNAscope/Element_HG002_100x"
-  "eval/DNAscope/Ultima_HG002_cram"
-  "eval/DNAscope_LongRead/PacBio_HG002_HiFi_Chem2"
+  "haplotyper/Illumina_HG002_HiSeqX_40x/calls.vcf.gz"
+  "haplotyper/Illumina_HG002_NovaSeq_40x/calls.vcf.gz"
+  "dnascope/Illumina_HG002_HiSeqX_40x/calls.vcf.gz"
+  "dnascope/Illumina_HG002_NovaSeq_40x/calls.vcf.gz"
+  "dnascope_lr/PacBio_HG002_HiFi_Chem2/calls.vcf.gz"
+  "dnascope_lr/ONT_HG002_HPRC/calls.vcf.gz"
 )
 
 for target in "${targets[@]}"; do
-    expected=()
-    for hcr_region in "none" "Ultima-HCR"; do
-        expected+=("$target"/"$hcr_region"/sample.summary.csv)
-    done
-    /home/azureuser/miniconda3/bin/snakemake --reason --resources mem_mb="$mem_mb" --configfile "$configfile" -s "$snakefile" -j $(nproc) -d "$WORK_DIR" -p --verbose --keep-going ${expected[@]}
+    /home/azureuser/miniconda3/bin/snakemake --reason --resources mem_mb="$mem_mb" \
+        --configfile "$configfile" -s "$snakefile" -j $(nproc) -d "$WORK_DIR" \
+        -p --verbose --resources numa1=1 numa2=1 numa3=1 numa4=1 --keep-going "$target"
 done

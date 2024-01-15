@@ -7,19 +7,21 @@ Pre-process samples through alignemnt, duplicate marking, and BQSR
 import multiprocessing
 
 #### Output ####
-MINIMAP2 = "ramdisk/minimap2/{sample}/{read_idx}/alignments.bam"
-MERGE_PB = "ramdisk/merge_pb/{sample}/merged.bam"
+MINIMAP2 = "ramdisk/minimap2/{sample}/{read_idx}/{n_subsets}/{subset}/alignments.bam"
 
 N_SPLITS = "n_splits/n_splits.txt"
-BWA = "ramdisk/bwa_mem/{sample}/{read_idx}/{n_subsets}/{subset}/alignments.bam"
-LC = "ramdisk/dedup/lc/{sample}/score.txt.gz"
-DEDUP = "ramdisk/dedup/dedup/{sample}/dedup.bam"
+BWA = "ramdisk/bwa_mem/{sample}/{bwa_model}/{read_idx}/{n_subsets}/{subset}/alignments.bam"
+LC = "ramdisk/dedup/lc/{sample}/{bwa_model}/score.txt.gz"
+DEDUP = "ramdisk/dedup/dedup/{sample}/{bwa_model}/dedup.bam"
 BQSR = "qualcal/{sample}/recal.table"
 
 #### Functions ####
 # Get the downsampled fastq file
 def get_downsample_fq(pair):
   def _get_downsample_fq(wldc):
+    # Skip downsampling for ONT data
+    if "ONT" in wldc.sample:
+      return FASTQ.format(pair=pair, **wldc.__dict__)
     return DOWNSAMPLE.format(pair=pair, **wldc.__dict__)
   return _get_downsample_fq
 
@@ -35,12 +37,12 @@ def collect_bwa_bams(suffix=""):
 
     for read_idx in range(len(sample_list)):
       for subset in range(n_splits):
-        expected.append(BWA.format(subset=subset, n_subsets=n_splits, read_idx=read_idx, sample=wldc.sample) + suffix)
+        expected.append(BWA.format(subset=subset, n_subsets=n_splits, read_idx=read_idx, bwa_model=wldc.bwa_model, sample=wldc.sample) + suffix)
     return expected
   return _collect_bwa_bams
 
 def get_qualcal_aln(wldc):
-    return DEDUP.format(sample=wldc.sample)
+    return DEDUP.format(sample=wldc.sample, bwa_model="none")
 
 def get_qualcal_ref(suffix=""):
   def _get_qualcal_ref(wldc):
@@ -67,12 +69,60 @@ def get_mm2_bam(suffix=""):
     return expected
   return _get_mm2_bam
 
+def get_bwa_model(wldc):
+  if wldc.bwa_model == "none":
+    return []
+  platform = "Illumina"
+  if "Ultima" in wldc.sample:
+    platform = "Ultima"
+  elif "Element" in wldc.sample:
+    platform = "Element"
+  return [DNASCOPE_MODEL.format(platform=platform)]
+
+def get_bwa_model_param(wldc, input):
+  if not input.model:
+    return ""
+  else:
+    return f"-x {input.model}/bwa.model"
+
+def get_ds_model(wldc):
+  if "PacBio" in wldc.sample:
+    return DNASCOPE_MODEL.format(platform="PacBio")
+  else:
+    return DNASCOPE_MODEL.format(platform="ONT")
+
+# Get the DNAscope model for the data type
+def get_dnascope_model(wldc):
+  platform = "Illumina"
+  if "PacBio" in wldc.sample:
+    platform = "PacBio"
+  elif "ONT" in wldc.sample:
+    platform = "ONT"
+  elif "Ultima" in wldc.sample:
+    platform = "Ultima"
+  elif "Element" in wldc.sample:
+    platform = "Element"
+  elif "WES" in wldc.sample:
+    platform = "Illumina_WES"
+  return DNASCOPE_MODEL.format(platform=platform)
+
+def get_numa_resources(numa_node):
+  def _get_numa_resources(wldc):
+    if int(numa_node) == int(wldc.subset):
+      return 1
+    else:
+      return 0
+  return _get_numa_resources
+
 #### Rules ####
 rule minimap2:
   input:
     fq = get_downsample_fq(0),
     fa = rules.download_ref.output.fa,
+    mmi = lambda wldc: MM2_INDEX.format(tech="map-hifi" if "PacBio" in wldc.sample else "map-ont"),
     sentieon = config["tools"]["sentieon"],
+    igzip = config["tools"]["igzip"],
+    model = get_dnascope_model,
   output:
     bam = temp(MINIMAP2),
     bai = temp(MINIMAP2 + ".bai"),
@@ -82,7 +132,12 @@ rule minimap2:
     stdout = MINIMAP2 + ".stdout",
     stderr = MINIMAP2 + ".stderr",
   threads:
-    192
+    lambda wldc: int(multiprocessing.cpu_count() / int(wldc.n_subsets))
+  resources:
+    numa1 = get_numa_resources(0),
+    numa2 = get_numa_resources(1),
+    numa3 = get_numa_resources(2),
+    numa4 = get_numa_resources(3),
   params:
     rg = lambda wldc: config["input"]["samples"][wldc.sample][int(wldc.read_idx)]["rg"],
   shell:
@@ -92,39 +147,20 @@ rule minimap2:
     mkdir -p "$outdir"
     exec 1>"{log.stdout}" 2>"{log.stderr}"
 
-    "{input.sentieon}" minimap2 -a -R '{params.rg}' -t {threads}  -x map-hifi \
-      {input.fa} "{input.fq}" | \
-      {input.sentieon} util sort -t {threads} -i - --sam2bam -o "{output.bam}"
-    """
+    numa_cpulist=($(lscpu | grep "NUMA node[0-9] CPU" | sed 's/^.*  //'))
+    n_splits=$(echo {wildcards.n_subsets})
+    subset=$(echo {wildcards.subset})
+    cpulist="${{numa_cpulist[$subset]}}"
 
-rule merge_pb:
-  input:
-    bam = get_mm2_bam(),
-    bai = get_mm2_bam(".bai"),
-    fa = rules.download_ref.output.fa,
-    fai = rules.download_ref.output.fai,
-    sentieon = config["tools"]["sentieon"],
-  output:
-    bam = temp(MERGE_PB),
-    bai = temp(MERGE_PB + ".bai"),
-  benchmark:
-    MERGE_PB + ".benchmark.txt"
-  log:
-    stdout = MERGE_PB + ".stdout",
-    stderr = MERGE_PB + ".stderr",
-  threads:
-    96
-  params:
-    input = lambda wldc, input: " -i '" + "' -i '".join(input.bam) + "'",
-  shell:
-    """
-    set -exvuo pipefail
-    outdir=$(dirname "{output.bam}")
-    mkdir -p "$outdir"
-    exec 1>"{log.stdout}" 2>"{log.stderr}"
-
-    {input.sentieon} driver {params.input} -t {threads} -r {input.fa} \
-      --algo ReadWriter "{output.bam}"
+    perl -MFcntl -e 'fcntl(STDOUT, 1031, 1073741824)';
+    taskset -c "$cpulist" {input.sentieon} minimap2 -a \
+      -R '{params.rg}' -t {threads} -x "{input.model}/minimap2.model" \
+      "{input.mmi}" \
+      <(perl -MFcntl -e 'fcntl(STDOUT, 1031, 1073741824)'; \
+        {input.sentieon} fqidx extract -F "${{subset}}"/"$n_splits" \
+          <(perl -MFcntl -e 'fcntl(STDOUT, 1031, 1073741824)'; \
+            {input.igzip} -dc "{input.fq}")) | \
+      taskset -c "$cpulist" {input.sentieon} util sort -t {threads} -i - --sam2bam -o "{output.bam}"
     """
 
 checkpoint numa_splits:
@@ -156,8 +192,8 @@ rule bwa_mem_subset:
     pac = REFERENCE + ".pac",
     sa = REFERENCE + ".sa",
     sentieon = config["tools"]["sentieon"],
-    sentieon_old = config["tools"]["sentieon_old"],
     igzip = config["tools"]["igzip"],
+    model = get_bwa_model,
   output:
     bam = temp(BWA),
     bai = temp(BWA + ".bai"),
@@ -171,6 +207,7 @@ rule bwa_mem_subset:
   params:
     bwa_k = 100000000,
     rg = lambda wldc: config["input"]["samples"][wldc.sample][int(wldc.read_idx)]["rg"],
+    model = get_bwa_model_param,
   threads:
     lambda wldc: int(multiprocessing.cpu_count() / int(wldc.n_subsets))
   shell:
@@ -195,7 +232,7 @@ rule bwa_mem_subset:
 
     perl -MFcntl -e 'fcntl(STDOUT, 1031, 268435456)';
     taskset -c "$cpulist" {input.sentieon} bwa mem -R "{params.rg}" \
-      -K {params.bwa_k} -t {threads} -p "{input.fa}" \
+      {params.model} -K {params.bwa_k} -t {threads} -p "{input.fa}" \
       <(perl -MFcntl -e 'fcntl(STDOUT, 1031, 268435456)'; \
         {input.sentieon} fqidx extract -F "${{subset}}"/"$n_splits" -K {params.bwa_k} \
         <(perl -MFcntl -e 'fcntl(STDOUT, 1031, 268435456)'; \
@@ -203,7 +240,7 @@ rule bwa_mem_subset:
         <(perl -MFcntl -e 'fcntl(STDOUT, 1031, 268435456)'; \
           {input.igzip} -dc "{input.fq2}")) \
       2>"{log.bwa}" | \
-      taskset -c  "$cpulist" {input.sentieon_old} util sort -t {threads} --sam2bam \
+      taskset -c  "$cpulist" {input.sentieon} util sort -t {threads} --sam2bam \
       -o "{output.bam}" -i - --bam_compression 1 2>"{log.sort}"
     """
 
@@ -222,7 +259,7 @@ rule locuscollector:
     stdout = LC + ".stdout",
     stderr = LC + ".stderr",
   threads:
-    192
+    300
   params:
     input_str = lambda wldc, input: '-i "' + '" -i "'.join([x for x in input.bam]) + '"',
   shell:
@@ -254,7 +291,7 @@ rule dedup:
     stdout = DEDUP + ".stdout",
     stderr = DEDUP + ".stderr",
   threads:
-    192
+    300
   params:
     input_str = lambda wldc, input: '-i "' + '" -i "'.join([x for x in input.bam]) + '"',
   shell:
@@ -285,7 +322,7 @@ rule qualcal:
     stdout = BQSR + ".stdout",
     stderr = BQSR + ".stderr",
   threads:
-    192
+    300
   params:
     vcf_str = lambda wldc, input: '-k "' + '" -k "'.join([x for x in input.known_vcfs]) + '"',
   shell:

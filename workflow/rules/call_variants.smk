@@ -11,15 +11,6 @@ DNASCOPE = "dnascope/{sample}/calls.vcf.gz"
 DNASCOPE_LR = "dnascope_lr/{sample}/calls.vcf.gz"
 
 #### Functions ####
-# Get the DNAscope model for the data type
-def get_dnascope_model(wldc):
-  platform = "Illumina"
-  if "Ultima" in wldc.sample:
-    platform = "Ultima"
-  elif "Element" in wldc.sample:
-    platform = "Element"
-  return DNASCOPE_MODEL.format(platform=platform)
-
 # Get the read filter for Ultima data
 def get_dnascope_rf(wldc, input):
   if "Ultima" not in wldc.sample:
@@ -33,15 +24,37 @@ def get_alignemnts(get_idx=False):
       fn = CRAM.format(sample=wldc.sample)
       return fn + ".crai" if get_idx else fn
     else:
-      fn = DEDUP.format(sample=wldc.sample)
+      fn = DEDUP.format(sample=wldc.sample, bwa_model="yes")
       return fn + ".bai" if get_idx else fn
   return _get_alignemnts
+
+def get_tech(wldc):
+  if "PacBio" in wldc.sample:
+    return "HiFi"
+  else:
+    return "ONT"
+
+def get_dnascopelr_bams(suffix=""):
+  def _get_dnascopelr_bams(wldc):
+    expected = []
+    sample_list = config["input"]["samples"][wldc.sample]
+
+    n_splits = 1
+    with checkpoints.numa_splits.get().output[0].open() as fh:
+      n_splits = int(fh.read().rstrip())
+
+    for read_idx in range(len(sample_list)):
+      for subset in range(n_splits):
+        expected.append(MINIMAP2.format(subset=subset, n_subsets=n_splits, read_idx=read_idx, sample=wldc.sample) + suffix)
+    return expected
+  return _get_dnascopelr_bams
+
 
 #### Rules ####
 rule haplotyper:
   input:
-    bam = rules.dedup.output.bam,
-    bai = rules.dedup.output.bai,
+    bam = lambda wldc: DEDUP.format(sample=wldc.sample, bwa_model="none"),
+    bai = lambda wldc: DEDUP.format(sample=wldc.sample, bwa_model="none") + ".bai",
     qcal = rules.qualcal.output,
     fa = rules.download_ref.output.fa,
     fai = rules.download_ref.output.fai,
@@ -59,7 +72,7 @@ rule haplotyper:
   params:
     xargs = "--pcr_indel_model none"
   threads:
-    192
+    300
   shell:
     """
     set -exvuo pipefail
@@ -93,7 +106,7 @@ rule dnascope:
     xargs = "--pcr_indel_model none",
     read_filter = get_dnascope_rf,
   threads:
-    192
+    300
   shell:
     """
     set -exvuo pipefail
@@ -103,7 +116,7 @@ rule dnascope:
 
     {input.sentieon} driver -i "{input.bam}" -r "{input.fa}" {params.read_filter} \
       --interval "{input.autosomes_bed}" -t {threads} --algo DNAscope {params.xargs} \
-      --model "{input.model}" -d "{input.dbsnp}" "{output.vcf}"
+      --model "{input.model}/dnascope.model" -d "{input.dbsnp}" "{output.vcf}"
     """
 
 rule dnamodelapply:
@@ -123,7 +136,7 @@ rule dnamodelapply:
     stdout = DNASCOPE + ".stdout",
     stderr = DNASCOPE + ".stderr",
   threads:
-    192
+    300
   shell:
     """
     set -exvuo pipefail
@@ -132,19 +145,19 @@ rule dnamodelapply:
     exec 1>"{log.stdout}" 2>"{log.stderr}"
 
     {input.sentieon} driver -t {threads} -r "{input.fa}" --algo DNAModelApply \
-      --model "{input.model}" -v "{input.vcf}" "{output.vcf}"
+      --model "{input.model}/dnascope.model" -v "{input.vcf}" "{output.vcf}"
     """
 
 rule dnascope_longread:
   input:
-    bam = rules.merge_pb.output.bam,
-    bai = rules.merge_pb.output.bai,
+    bams = get_dnascopelr_bams(),
+    bais = get_dnascopelr_bams(".bai"),
     fa = rules.download_ref.output.fa,
     fai = rules.download_ref.output.fai,
     autosomes_bed = rules.autosomes_bed.output,
-    model = DNASCOPE_LR_MODEL,
+    model = get_dnascope_model,
     dbsnp = SITE_VCF.format(vcf_name="dbsnp"),
-    dnascope_hifi = DNASCOPE_LR_SCRIPT,
+    sentieon_cli = config["tools"]["sentieon_cli"],
     sentieon = config["tools"]["sentieon"],
     bedtools = config["tools"]["bedtools"],
     bcftools = config["tools"]["bcftools"],
@@ -156,8 +169,11 @@ rule dnascope_longread:
   log:
     stdout = DNASCOPE_LR + ".stdout",
     stderr = DNASCOPE_LR + ".stderr",
+  params:
+    tech = get_tech,
+    input = lambda wldc, input: " '" + "' '".join(input.bams) + "'",
   threads:
-    192
+    300
   shell:
     """
     set -exvuo pipefail
@@ -170,6 +186,7 @@ rule dnascope_longread:
     bcftools_dir=$(dirname "{input.bcftools}")
 
     export PATH=$sentieon_dir:$bedtools_dir:$bcftools_dir:$PATH
-    bash "{input.dnascope_hifi}" -r "{input.fa}" -i "{input.bam}" -m "{input.model}" \
-      -d "{input.dbsnp}" -- "{output.vcf}"
+    "{input.sentieon_cli}" dnascope-longread --tech "{params.tech}" \
+      -r "{input.fa}" -i {params.input} -m "{input.model}" \
+      -b "{input.autosomes_bed}" -d "{input.dbsnp}" "{output.vcf}"
     """
