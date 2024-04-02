@@ -8,15 +8,12 @@ Download reference and input files
 FASTQ = "input_fq/{sample}/{read_idx}/{pair}/data.fq.gz"
 CRAM = "input_cram/{sample}/ultima.cram"
 REFERENCE = "reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta"
+MM2_INDEX = "reference/mm2_index/{tech}/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta.mmi"
 CRAM_REF = "reference/Homo_sapiens_assembly38.fasta"
 AUTOSOMES = "autosomes_bed/autosomes.fa"
 TRUTHSET = "truthset/v4.2.1/HG002/truthset"
 SITE_VCF = "sites_vcfs/{vcf_name}/calls.vcf.gz"
-SITE_INPUT_VCF = "sites_vcfs/{vcf_name}/inputs.vcf.gz"
 DNASCOPE_MODEL = "dnascope_model/{platform}/dnascope.model"
-
-DNASCOPE_LR_SCRIPT = "dnascope_lr_script/DNAscopeHiFiBeta0.4.pipeline/dnascope_HiFi.sh"
-DNASCOPE_LR_MODEL = "dnascope_lr_script/DNAscopeHiFiBeta0.4.pipeline/DNAscopeHiFiBeta0.4.model"
 
 #### Rules ####
 rule download_samples:
@@ -136,6 +133,25 @@ rule download_ref:
     {input.rtgtools} format -o "{output.sdf}" "{output.fa}"
     """
 
+rule mm2_index:
+  input:
+    fa = rules.download_ref.output.fa,
+    sentieon = config["tools"]["sentieon"],
+  output:
+    mmi = MM2_INDEX
+  log:
+    stdout = MM2_INDEX + ".mmi.stdout",
+    stderr = MM2_INDEX + ".mmi.stderr",
+  shell:
+    """
+    set -exvuo pipefail
+    outdir=$(dirname "{output.mmi}")
+    mkdir -p "$outdir"
+    exec >"{log.stdout}" 2>"{log.stderr}"
+
+    {input.sentieon} minimap2 -x "{wildcards.tech}" -d "{output.mmi}" "{input.fa}"
+    """
+
 rule autosomes_bed:
   input:
     rules.download_ref.output.fai,
@@ -159,7 +175,6 @@ rule download_sites_vcf:
     sentieon = config["tools"]["sentieon"],
   output:
     vcf = SITE_VCF,
-    input = SITE_INPUT_VCF,
     tbi = SITE_VCF + ".tbi",
   log:
     stdout = SITE_VCF + ".stdout",
@@ -179,8 +194,8 @@ rule download_sites_vcf:
       curl -L -o "{output.vcf}" "{params.url}"
       "{input.sentieon}" util vcfindex "{output.vcf}"
     else
-      curl -L -o "{output.input}" "{params.url}"
-      gzip -dc "{output.input}"  | "{input.sentieon}" util vcfconvert - "{output.vcf}"
+      curl -L "{params.url}" | \
+        "{input.sentieon}" util vcfconvert - "{output.vcf}"
     fi
     """
 
@@ -199,22 +214,5 @@ rule download_model:
     exec &>"{log}"
 
     curl -L -o "{output}" "{params.url}"
-    """
-
-rule dnascope_lr_script:
-  output:
-    script = DNASCOPE_LR_SCRIPT,
-    model = DNASCOPE_LR_MODEL,
-  params:
-    url = config["input"]["dnascope_LR_package"],
-  shell:
-    """
-    set -exvuo pipefail
-    outdir=$(dirname "{output.script}")
-    outdir2=$(dirname "$outdir")
-    mkdir -p "$outdir2"
-
-    cd "$outdir2"
-    curl -L "{params.url}" | tar -zxf -
     """
 

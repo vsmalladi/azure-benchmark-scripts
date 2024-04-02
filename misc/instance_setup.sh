@@ -2,8 +2,7 @@
 
 set -exvuo pipefail
 
-SENTIEON_VERSION=202112.05
-SENTIEON_OLD=201711.01
+SENTIEON_VERSION=202308.01
 SENTIEON_URL="https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-"
 SENTIEON_ARM_URL="https://s3.amazonaws.com/sentieon-release/software/arm-sentieon-genomics-"
 
@@ -27,9 +26,6 @@ architechure=$(uname -m)
 if [[ "$architechure" == "x86_64" ]]; then
     curl -L "${SENTIEON_URL}${SENTIEON_VERSION}.tar.gz" | tar -zxf -
     sentieon-genomics-"$SENTIEON_VERSION"/bin/sentieon driver -h
-
-    curl -L "${SENTIEON_URL}${SENTIEON_OLD}.tar.gz" | tar -zxf -
-    sentieon-genomics-"$SENTIEON_OLD"/bin/sentieon driver -h
 elif [[ "$architechure" == "arm" || "$architechure" == "aarch64" ]]; then
     curl -L "${SENTIEON_ARM_URL}${SENTIEON_VERSION}.tar.gz" | tar -zxf -
     arm-sentieon-genomics-"$SENTIEON_VERSION"/bin/sentieon driver -h
@@ -130,6 +126,14 @@ pip3=/home/azureuser/miniconda3/bin/pip
 $pip3 install snakemake pandas
 snakemake=/home/azureuser/miniconda3/bin/snakemake
 
+# Install the sentieon-cli
+$pip3 install poetry
+poetry=/home/azureuser/miniconda3/bin/poetry
+cd "$INSTALL_DIR"
+git clone https://github.com/Sentieon/sentieon-cli.git
+cd sentieon-cli
+$poetry config virtualenvs.in-project true
+$poetry install
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"
