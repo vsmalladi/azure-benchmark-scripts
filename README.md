@@ -10,7 +10,7 @@ The script at `misc/instance_setup.sh` performs initial setup of the instance an
 
 Input datasets for the benchmark are recorded in the `config/config.yaml` (and `config/config_arm.yaml`) files. With the exception of the Element dataset, that you will have to download on your own.
 
-We recommend  downloading all the files and placing them in azure blob storage. You can use [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs#copy-a-container-to-another-storage-account) to transfer the required files to your own Storage account [using a shared access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview) with "Write" access. Then we recomend updated tine configs to use a shared access signature to each file. The pipeline will automatic download input files. Visiting the Element web page recorded in the config file using an internet browser is required for downloading the Element dataset.
+We recommend  downloading all the files and placing them in azure blob storage. You can use [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs#copy-a-container-to-another-storage-account) to transfer the required files to your own Storage account [using a shared access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview) with "Write" access. Then we recomend updating your configs to use a shared access signature to each file. The pipeline will automatic download input files. Visiting the Element web page recorded in the config file using an internet browser is required for downloading the Element dataset.
 
 ### Running benchmarks
 
