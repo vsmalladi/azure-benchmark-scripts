@@ -81,7 +81,8 @@
       Illumina_WES: https://s3.amazonaws.com/sentieon-release/other/DNAscopeIlluminaWES2.0.bundle
       Element: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelElementBio0.3.model
       Ultima: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelUltima0.4.model
-      PacBio: https://s3.amazonaws.com/sentieon-release/other/DNAscopePacBio2.0.bundle
+      PacBio: https://s3.amazonaws.com/sentieon-release/other/DNAscopePacBio2.1.bundle
+      ONT: https://s3.amazonaws.com/sentieon-release/other/DNAscopeONT2.1.bundle
   params:
     n_target_bases: 93000000000  # 30x at a 3.1GB genome
   tools:
