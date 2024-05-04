@@ -16,7 +16,7 @@ sudo apt update -y
 sudo apt install -y
 sudo apt install -y autoconf automake make gcc libdata-dump-perl zlib1g zlib1g-dev  \
     bzip2 libbz2-dev xz-utils curl openssl libncurses5-dev libncursesw5-dev libtool \
-    nasm yasm gzip git unzip hostname cmake make gcc g++ autoconf liblzma-dev python
+    nasm yasm gzip git unzip hostname cmake make gcc g++ autoconf liblzma-dev python2
 
 # Get the software packge
 cd "$INSTALL_DIR"
@@ -67,8 +67,8 @@ make
 cd "$INSTALL_DIR"
 mkdir -p pigz
 cd pigz
-curl -L https://zlib.net/pigz/pigz-2.7.tar.gz | tar -zxf -
-cd pigz-2.7
+curl -L https://zlib.net/pigz/pigz-2.8.tar.gz | tar -zxf -
+cd pigz-2.8
 make
 
 # install bedtools
@@ -119,8 +119,8 @@ python2 ./install.py "$INSTALL_DIR"/happy/hap.py-install --no-tests
 
 # Install snakemake with pip
 cd "$INSTALL_DIR"
-curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh
-bash Miniconda3-latest-Linux-aarch64.sh -b
+curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b
 python3=/home/azureuser/miniconda3/bin/python
 pip3=/home/azureuser/miniconda3/bin/pip
 $pip3 install snakemake pandas
@@ -137,7 +137,7 @@ $poetry install
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"
-curl -LO https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-aarch64.sh
+curl -LO https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
 bash Miniconda2-latest-Linux-x86_64.sh -b
 python2=/home/azureuser/miniconda2/bin/python
 pip2=/home/azureuser/miniconda2/bin/pip

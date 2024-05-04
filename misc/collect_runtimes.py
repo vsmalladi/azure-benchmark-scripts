@@ -134,6 +134,7 @@ pipeline_samples = {
     ],
     "DNAscope LongRead": [
         "PacBio_HG002_HiFi_Chem2",
+        "ONT_HG002_HPRC"
     ],
 }
 

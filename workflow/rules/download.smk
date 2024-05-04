@@ -189,7 +189,7 @@ rule download_sites_vcf:
     exec >"{log.stdout}" 2>"{log.stderr}"
     
     url="{params.url}"
-    pat="*.vcf.gz"
+    pat="*.vcf.gz*"
     if [[ $url == $pat ]]; then
       curl -L -o "{output.vcf}" "{params.url}"
       "{input.sentieon}" util vcfindex "{output.vcf}"
