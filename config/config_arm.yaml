@@ -80,8 +80,8 @@
     dnascope_model:
       Illumina: https://s3.amazonaws.com/sentieon-release/other/DNAscopeIlluminaWGS2.0.bundle
       Illumina_WES: https://s3.amazonaws.com/sentieon-release/other/DNAscopeIlluminaWES2.0.bundle
-      Element: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelElementBio0.3.model
-      Ultima: https://s3.amazonaws.com/sentieon-release/other/SentieonDNAscopeModelUltima0.4.model
+      Element: https://s3.amazonaws.com/sentieon-release/other/DNAscopeElementBioWGS2.0.bundle
+      Ultima: https://s3.amazonaws.com/sentieon-release/other/SentieonUltima1.0.bundle
       PacBio: https://s3.amazonaws.com/sentieon-release/other/DNAscopePacBio2.1.bundle
       ONT: https://s3.amazonaws.com/sentieon-release/other/DNAscopeONT2.1.bundle
   params:
