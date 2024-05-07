@@ -21,20 +21,20 @@ pipelines = {
         (
             "Alignment",
             {
-                "path": "ramdisk/bwa_mem/{sample}/0/*/*/alignments.bam.benchmark.txt",
+                "path": "ramdisk/bwa_mem/{sample}/none/0/*/*/alignments.bam.benchmark.txt",
                 "reduce_func": max,
             },
         ),
         (
             "LocusCollector",
             {
-                "path": "ramdisk/dedup/lc/{sample}/score.txt.gz.benchmark.txt",
+                "path": "ramdisk/dedup/lc/{sample}/none/score.txt.gz.benchmark.txt",
             },
         ),
         (
             "Dedup",
             {
-                "path": "ramdisk/dedup/dedup/{sample}/dedup.bam.benchmark.txt",
+                "path": "ramdisk/dedup/dedup/{sample}/none/dedup.bam.benchmark.txt",
             },
         ),
         (
@@ -68,20 +68,20 @@ pipelines = {
         (
             "Alignment",
             {
-                "path": "ramdisk/bwa_mem/{sample}/0/*/*/alignments.bam.benchmark.txt",
+                "path": "ramdisk/bwa_mem/{sample}/yes/0/*/*/alignments.bam.benchmark.txt",
                 "reduce_func": max,
             },
         ),
         (
             "LocusCollector",
             {
-                "path": "ramdisk/dedup/lc/{sample}/score.txt.gz.benchmark.txt",
+                "path": "ramdisk/dedup/lc/{sample}/yes/score.txt.gz.benchmark.txt",
             },
         ),
         (
             "Dedup",
             {
-                "path": "ramdisk/dedup/dedup/{sample}/dedup.bam.benchmark.txt",
+                "path": "ramdisk/dedup/dedup/{sample}/yes/dedup.bam.benchmark.txt",
             },
         ),
         (
@@ -101,13 +101,8 @@ pipelines = {
         (
             "Alignment",
             {
-                "path": "ramdisk/minimap2/{sample}/*/alignments.bam.benchmark.txt",
-            },
-        ),
-        (
-            "Merge",
-            {
-                "path": "ramdisk/merge_pb/{sample}/merged.bam.benchmark.txt",
+                "path": "ramdisk/minimap2/{sample}/*/*/*/alignments.bam.benchmark.txt",
+                "reduce_func": max,
             },
         ),
         (
@@ -139,8 +134,8 @@ pipeline_samples = {
 }
 
 row_order = [
-    "Sample", "Pipeline","Alignment", "Merge", "LocusCollector", "Dedup", "QualCal", "Haplotyper",
-    "DNAscope_tmp", "DNAscope", "DNAscope-LR", "Total (s)", "Total (min)",
+    "Sample", "Pipeline","Alignment", "LocusCollector", "Dedup", "QualCal", "Haplotyper",
+    "DNAScope_tmp", "DNAScope", "Total (s)", "Total (min)",
     "$/hr", "Total compute cost"
 ]
 
@@ -186,6 +181,7 @@ def main(args):
         "DNAscope/Element_HG002_100x",
         "DNAscope/Ultima_HG002_cram",
         "DNAscope_LongRead/PacBio_HG002_HiFi_Chem2",
+        "DNAscope_LongRead/ONT_HG002_HPRC",
     ]
 
 
@@ -241,12 +237,12 @@ def main(args):
         if (pipeline == "DNAseq"):
 
             # Alignment runtimes
-            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem", sample,  "0/*/*/alignments.bam.benchmark.txt"))
+            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem/", sample,  "none/0/*/*/alignments.bam.benchmark.txt"))
             runtime_in_sec["Alignment"] = max([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
 
             # Preprocessing
-            runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "score.txt.gz.benchmark.txt"))
-            runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "dedup.bam.benchmark.txt"))
+            runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "none/score.txt.gz.benchmark.txt"))
+            runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "none/dedup.bam.benchmark.txt"))
             runtime_in_sec["QualCal"] = bm_file_to_sec(os.path.join(in_dir, "qualcal", sample, "recal.table.benchmark.txt"))
             
             # Variant Calling
@@ -255,13 +251,13 @@ def main(args):
         elif (pipeline == 'DNAscope'):
             if (sample != 'Ultima_HG002_cram'):
                 # Alignment runtimes
-                alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem", sample,  "0/*/*/alignments.bam.benchmark.txt"))
+                alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/bwa_mem", sample,  "yes/0/*/*/alignments.bam.benchmark.txt"))
                 runtime_in_sec["Alignment"] = max([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
             
 
                 # Preprocessing
-                runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "score.txt.gz.benchmark.txt"))
-                runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "dedup.bam.benchmark.txt"))
+                runtime_in_sec["LocusCollector"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/lc", sample, "yes/score.txt.gz.benchmark.txt"))
+                runtime_in_sec["Dedup"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/dedup/dedup", sample, "yes/dedup.bam.benchmark.txt"))
             
             # Variant Calling
             runtime_in_sec["Dnascope"] = bm_file_to_sec(os.path.join(in_dir, "dnascope", sample, "calls.vcf.gz.benchmark.txt"))
@@ -269,12 +265,9 @@ def main(args):
         
         elif (pipeline == 'DNAscope_LongRead'):
             # Alignment runtimes
-            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/minimap2", sample, "*/alignments.bam.benchmark.txt"))
+            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/minimap2", sample, "*/*/*/alignments.bam.benchmark.txt"))
             runtime_in_sec["Alignment"] = sum([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
 
-            # Preprocssing
-            runtime_in_sec["MergePb"] = bm_file_to_sec(os.path.join(in_dir, "ramdisk/merge_pb", sample, "merged.bam.benchmark.txt"))
-            
             # Variant Calling
             runtime_in_sec["Dnascope"] = bm_file_to_sec(os.path.join(in_dir, "dnascope_lr", sample, "calls.vcf.gz.benchmark.txt"))
         
@@ -291,6 +284,7 @@ def main(args):
         runtime_in_sec.update(results)
         df_results = pd.DataFrame(runtime_in_sec, index=[0])
         overall_results = pd.concat([overall_results, df_results])
+        print(overall_results)
         
 
 

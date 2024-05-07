@@ -147,6 +147,8 @@ fi
 targets=(
   "haplotyper/Illumina_HG002_HiSeqX_40x/calls.vcf.gz"
   "haplotyper/Illumina_HG002_NovaSeq_40x/calls.vcf.gz"
+  "dnascope/Element_HG002_100x/calls.vcf.gz"
+  "dnascope/Ultima_HG002_cram/calls.vcf.gz"
   "dnascope/Illumina_HG002_HiSeqX_40x/calls.vcf.gz"
   "dnascope/Illumina_HG002_NovaSeq_40x/calls.vcf.gz"
   "dnascope_lr/PacBio_HG002_HiFi_Chem2/calls.vcf.gz"
