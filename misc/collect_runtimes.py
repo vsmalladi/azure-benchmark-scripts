@@ -135,7 +135,7 @@ pipeline_samples = {
 
 row_order = [
     "Sample", "Pipeline","Alignment", "LocusCollector", "Dedup", "QualCal", "Haplotyper",
-    "DNAScope_tmp", "DNAScope", "Total (s)", "Total (min)",
+    "Dnascope_tmp", "Dnascope", "Total (s)", "Total (min)",
     "$/hr", "Total compute cost"
 ]
 
@@ -283,9 +283,7 @@ def main(args):
         # Collect everything together
         runtime_in_sec.update(results)
         df_results = pd.DataFrame(runtime_in_sec, index=[0])
-        overall_results = pd.concat([overall_results, df_results])
-        print(overall_results)
-        
+        overall_results = pd.concat([overall_results, df_results])        
 
 
     # Output a nice table
