@@ -156,7 +156,7 @@ targets=(
 )
 
 for target in "${targets[@]}"; do
-    /home/azureuser/miniconda3/bin/snakemake --reason --resources mem_mb="$mem_mb" \
+    /home/azureuser/miniconda3/bin/snakemake --resources mem_mb="$mem_mb" \
         --configfile "$configfile" -s "$snakefile" -j $(nproc) -d "$WORK_DIR" \
         -p --verbose --resources numa1=1 numa2=1 numa3=1 numa4=1 --keep-going "$target"
 done
