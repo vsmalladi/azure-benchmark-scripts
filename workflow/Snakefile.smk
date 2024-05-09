@@ -70,7 +70,7 @@ rule download_all:
     DNASCOPE_LR_MODEL,
   output:
     DOWNLOAD_PREPROCESS_ALL,
-  shell:
+  shell: 
     """ touch "{output}" """
 
 rule run_hc:
