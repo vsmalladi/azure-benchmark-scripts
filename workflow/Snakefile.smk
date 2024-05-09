@@ -67,7 +67,7 @@ rule download_all:
     AUTOSOMES,
     get_all_vcfs,
     get_all_models,
-    DNASCOPE_LR_MODEL,
+    DNASCOPE_MODEL,
   output:
     DOWNLOAD_PREPROCESS_ALL,
   shell: 
