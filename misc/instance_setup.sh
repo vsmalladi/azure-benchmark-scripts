@@ -127,13 +127,9 @@ $pip3 install snakemake pandas
 snakemake=/home/azureuser/miniconda3/bin/snakemake
 
 # Install the sentieon-cli
-$pip3 install poetry
-poetry=/home/azureuser/miniconda3/bin/poetry
 cd "$INSTALL_DIR"
-git clone https://github.com/Sentieon/sentieon-cli.git
-cd sentieon-cli
-$poetry config virtualenvs.in-project true
-$poetry install
+curl -LO https://github.com/sentieon/sentieon-cli/releases/download/v1.0.0/sentieon_cli-1.0.0.tar.gz
+$pip3 install sentieon_cli-1.0.0.tar.gz
 
 # install miniconda2 for hap.py
 cd "$INSTALL_DIR"

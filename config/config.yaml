@@ -87,10 +87,10 @@
   params:
     n_target_bases: 93000000000  # 30x at a 3.1GB genome
   tools:
-    sentieon: /home/azureuser/programs/release/arm-sentieon-genomics-202308.01/bin/sentieon
+    sentieon: /home/azureuser/programs/release/sentieon-genomics-202308.01/bin/sentieon
     igzip: /home/azureuser/programs/isa-l/isa-l-2.30.0/programs/igzip
     seqtk: /home/azureuser/programs/seqtk/seqtk/seqtk
-    pigz: /home/azureuser/programs/pigz/pigz-2.7/pigz
+    pigz: /home/azureuser/programs/pigz/pigz-2.8/pigz
     bedtools: /home/azureuser/programs/bedtools/2.30.0/bedtools
     samtools: /home/azureuser/programs/samtools/samtools-1.15.1/samtools
     bcftools: /home/azureuser/programs/bcftools/bcftools-1.15.1/bcftools
@@ -98,4 +98,4 @@
     conda: /home/azureuser/miniconda3/bin/conda
     python2: /home/azureuser/miniconda2/bin/python
     hap.py: /home/azureuser/programs/happy/hap.py-install/bin/hap.py
-    sentieon_cli: /home/azureuser/programs/sentieon-cli/.venv/bin/sentieon-cli
+    sentieon_cli: /home/azureuser/miniconda3/bin/sentieon-cli
