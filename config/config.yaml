@@ -38,31 +38,31 @@
       ONT_HG002_HPRC:
         - rg: "@RG\\tID:ONT-HPRC-HG002-1\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_1_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_1_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-2\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_2_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_2_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-3\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_3_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_3_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-4\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_4_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_4_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-5\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_5_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_5_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-6\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_6_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_6_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-7\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_7_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_7_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-8\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_8_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_8_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-9\\tSM:HG002\\tPL:ONT"
           fq:
-            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_9_Dorao_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
+            - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_9_Dorado_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
         - rg: "@RG\\tID:ONT-HPRC-HG002-10\\tSM:HG002\\tPL:ONT"
           fq:
             - "https://human-pangenomics.s3.amazonaws.com/submissions/0CB931D5-AE0C-4187-8BD8-B3A9C9BFDADE--UCSC_HG002_R1041_Duplex_Dorado/Dorado_v0.1.1/stereo_duplex/11_15_22_R1041_Duplex_HG002_10_Dordo_v0.1.1_400bps_sup_stereo_duplex_pass.fastq.gz"
