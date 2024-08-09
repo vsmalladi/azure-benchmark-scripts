@@ -264,9 +264,15 @@ def main(args):
             runtime_in_sec["Dnascope_tmp"] = bm_file_to_sec(os.path.join(in_dir, "dnascope_tmp", sample, "calls.vcf.gz.benchmark.txt"))
         
         elif (pipeline == 'DNAscope_LongRead'):
-            # Alignment runtimes
-            alignment_results = glob.glob(os.path.join(in_dir, "ramdisk/minimap2", sample, "*/*/*/alignments.bam.benchmark.txt"))
-            runtime_in_sec["Alignment"] = sum([bm_file_to_sec(x) for x in alignment_results])  # One or more alignemnt jobs run in parallel. All jobs need to finish before the next step, so total runtime is the max of all runtimes
+            # Alignment runtime is the longest running numa node
+            numa_nodes = int(os.listdir(os.path.join(in_dir, "ramdisk/minimap2", sample, "0"))[0])
+            numa_runtimes = []
+
+            for i in range(numa_nodes):
+                alignment_results = glob.glob(f"{in_dir}/ramdisk/minimap2/{sample}/*/{numa_nodes}/{i}/alignments.bam.benchmark.txt")
+                numa_runtimes.append(sum([bm_file_to_sec(x) for x in alignment_results]))
+
+            runtime_in_sec["Alignment"] = max(numa_runtimes)
 
             # Variant Calling
             runtime_in_sec["Dnascope"] = bm_file_to_sec(os.path.join(in_dir, "dnascope_lr", sample, "calls.vcf.gz.benchmark.txt"))
