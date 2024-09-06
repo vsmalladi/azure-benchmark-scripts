@@ -89,7 +89,7 @@
     sentieon: /home/azureuser/programs/release/arm-sentieon-genomics-202308.01/bin/sentieon
     igzip: /home/azureuser/programs/isa-l/isa-l-2.30.0/programs/igzip
     seqtk: /home/azureuser/programs/seqtk/seqtk/seqtk
-    pigz: /home/azureuser/programs/pigz/pigz-2.7/pigz
+    pigz: /home/azureuser/programs/pigz/pigz-2.8/pigz
     bedtools: /home/azureuser/programs/bedtools/2.30.0/bedtools
     samtools: /home/azureuser/programs/samtools/samtools-1.15.1/samtools
     bcftools: /home/azureuser/programs/bcftools/bcftools-1.15.1/bcftools
