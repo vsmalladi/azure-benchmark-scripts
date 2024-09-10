@@ -97,4 +97,4 @@
     conda: /home/azureuser/miniconda3/bin/conda
     python2: /home/azureuser/miniconda2/bin/python
     hap.py: /home/azureuser/programs/happy/hap.py-install/bin/hap.py
-    sentieon_cli: /home/azureuser/programs/sentieon-cli/.venv/bin/sentieon-cli
+    sentieon_cli:  /home/azureuser/miniconda3/bin/sentieon-cli
